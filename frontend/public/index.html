@@ -1,0 +1,135 @@
+        <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Dashboard Ultra</title>
+    <script>
+        // SÉCURITÉ : On vérifie le rôle avant tout
+        const role = localStorage.getItem('userRole');
+        if (!role || role.toLowerCase().trim() !== 'admin') {
+            window.location.replace('login.html');
+        }
+    </script>
+    <style>
+        /* (Garde ton CSS habituel ici, il est très bien) */
+        :root { --sidebar-bg: #0f172a; --main-bg: #f8fafc; --primary: #4f46e5; --success: #10b981; --text-main: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--main-bg); margin: 0; display: flex; }
+        .sidebar { width: 260px; background: var(--sidebar-bg); color: white; height: 100vh; padding: 30px 20px; position: fixed; }
+        .main { margin-left: 300px; padding: 40px; width: calc(100% - 340px); }
+        .section { background: white; padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: left; }
+        .btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .btn-ok { background: var(--success); color: white; }
+        .badge { padding: 4px 8px; border-radius: 6px; background: #f1f5f9; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🛡️ AdminPanel</h2>
+        <p>Connecté : <b id="nomAdmin">...</b></p>
+        <nav>
+            <p style="cursor:pointer" onclick="location.reload()">🔄 Actualiser</p>
+            <p style="cursor:pointer" onclick="deconnexion()">🚪 Déconnexion</p>
+        </nav>
+    </div>
+
+    <div class="main">
+        <h1>Dashboard Global</h1>
+
+        <div class="section">
+            <h2>👥 Candidatures Auteurs <span id="countAuth" class="badge">0</span></h2>
+            <table>
+                <thead><tr><th>Utilisateur</th><th>Action</th></tr></thead>
+                <tbody id="auteursList"><tr><td>Chargement...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>⏳ Articles en attente <span id="countArt" class="badge">0</span></h2>
+            <table>
+                <thead><tr><th>Titre</th><th>Action</th></tr></thead>
+                <tbody id="articlesList"><tr><td>Chargement...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('nomAdmin').innerText = localStorage.getItem('userPrenom') || 'Admin';
+
+        function deconnexion() {
+            localStorage.clear();
+            window.location.replace('login.html');
+        }
+
+        async function chargerDonnees() {
+            try {
+                // 1. CHARGEMENT DES AUTEURS
+                const resAuth = await fetch('http://localhost:3000/api/admin/author-requests');
+                const demandes = await resAuth.json();
+                console.log("Auteurs reçus :", demandes);
+
+                const auteursTbody = document.getElementById('auteursList');
+                document.getElementById('countAuth').innerText = demandes.length;
+
+                if (demandes.length === 0) {
+                    auteursTbody.innerHTML = "<tr><td>Aucune demande en attente.</td></tr>";
+                } else {
+                    auteursTbody.innerHTML = demandes.map(d => `
+                        <tr>
+                            <td><b>${d.username || d.pseudo || 'Inconnu'}</b></td>
+                            <td><button class="btn btn-ok" onclick="approuverAuteur(${d.id || d.id_user})">Approuver</button></td>
+                        </tr>
+                    `).join('');
+                }
+
+                // 2. CHARGEMENT DES ARTICLES
+                const resArt = await fetch('http://localhost:3000/api/article');
+                const articles = await resArt.json();
+                console.log("Articles reçus :", articles);
+
+                const articlesTbody = document.getElementById('articlesList');
+                // On filtre les articles qui ont le statut 'en_attente'
+                const enAttente = articles.filter(a => a.statut === 'en_attente');
+                document.getElementById('countArt').innerText = enAttente.length;
+
+                if (enAttente.length === 0) {
+                    articlesTbody.innerHTML = "<tr><td>Tout est publié !</td></tr>";
+                } else {
+                    articlesTbody.innerHTML = enAttente.map(a => `
+                        <tr>
+                            <td><b>${a.titre || a.titre_article}</b></td>
+                            <td><button class="btn btn-ok" onclick="validerArt(${a.id || a.id_article})">Publier</button></td>
+                        </tr>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error("Erreur de fetch :", err);
+                alert("Impossible de contacter le serveur.");
+            }
+        }
+
+        async function approuverAuteur(id) {
+            if(!id) return alert("ID manquant");
+            const res = await fetch(`http://localhost:3000/api/admin/approve-author/${id}`, { method: 'POST' });
+            if(res.ok) { alert("Auteur approuvé !"); chargerDonnees(); }
+        }
+
+        async function validerArt(id) {
+            if(!id) return alert("ID manquant");
+            const res = await fetch(`http://localhost:3000/api/article/${id}/statut`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ statut: 'publie' })
+            });
+            if(res.ok) { alert("Article en ligne !"); chargerDonnees(); }
+        }
+
+        // On lance le chargement au démarrage
+        window.onload = chargerDonnees;
+    </script>
+</body>
+</html>

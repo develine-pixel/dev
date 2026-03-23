@@ -1,0 +1,249 @@
+     <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Blog Moderne</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        body { 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: var(--bg-gradient);
+            margin: 0; 
+            color: var(--text-dark);
+        }
+
+        .login-box { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1); 
+            width: 100%;
+            max-width: 400px; 
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.025em; }
+        .subtitle { color: var(--text-gray); margin-bottom: 30px; font-size: 0.95rem; }
+
+        .input-group { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-dark); }
+
+        input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            outline: none; 
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 1rem;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+        }
+
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        .error-msg { 
+            color: #b91c1c; 
+            background: #fef2f2; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            display: none; 
+            font-size: 0.85rem; 
+            border: 1px solid #fee2e2;
+        }
+        
+        #loginModal { 
+            display:none; 
+            position:fixed; 
+            top:0; left:0; 
+            width:100%; height:100%; 
+            background:rgba(15, 23, 42, 0.8); 
+            z-index:1000; 
+            justify-content:center; 
+            align-items:center; 
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content { 
+            background:white; 
+            padding:40px; 
+            border-radius:24px; 
+            text-align:center; 
+            width:90%;
+            max-width:350px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 { color: #10b981; margin-bottom: 15px; }
+        
+        .btn-space { 
+            background: var(--primary); 
+            color:white; 
+            width:100%; 
+            padding:14px; 
+            border:none; 
+            border-radius:12px; 
+            cursor:pointer; 
+            font-weight:700; 
+            margin-bottom:12px;
+            font-size: 1rem;
+        }
+
+        .btn-blog { 
+            background:#f8fafc; 
+            color: var(--text-gray); 
+            width:100%; 
+            padding:14px; 
+            border:1px solid #e2e8f0; 
+            border-radius:12px; 
+            cursor:pointer; 
+            font-weight:600; 
+        }
+
+        .footer-link { margin-top: 25px; font-size: 0.9rem; color: var(--text-gray); }
+        .footer-link a { color: var(--primary); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>Content de vous revoir !</h2>
+        <p class="subtitle">Veuillez entrer vos identifiants</p>
+        
+        <div id="error" class="error-msg"></div>
+
+        <div class="input-group">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" placeholder="Pseudo" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button onclick="connecter()">Connexion</button>
+
+        <div class="footer-link">
+            Pas encore de compte ? <a href="inscription.html">S'inscrire</a>
+        </div>
+    </div>
+
+    <div id="loginModal">
+        <div class="modal-content">
+            <h2>Succès ! 🎉</h2>
+            <p id="welcomeMessage" style="font-size: 1.1rem; margin-bottom: 8px; font-weight: 700;"></p>
+            <p style="color:var(--text-gray); margin-bottom: 30px;">Authentification réussie. Quelle est la suite ?</p>
+            
+            <button class="btn-space" onclick="allerEspace()">🛠️ Mon Tableau de Bord</button>
+            <button class="btn-blog" onclick="window.location.href='blog.html'">🏠 Retour au Blog</button>
+        </div>
+    </div>
+
+    <script>
+        async function connecter() {
+            // .trim() retire les espaces accidentels au début ou à la fin
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('error');
+
+            if(!username || !password) {
+                errorDiv.innerText = "Veuillez remplir tous les champs.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Reset du stockage local pour éviter les conflits
+                    localStorage.clear();
+                    
+                    // Enregistrement des données fraîches
+                    localStorage.setItem('userRole', data.role.toLowerCase().trim());
+                    localStorage.setItem('userPrenom', data.prenom);
+                    localStorage.setItem('userName', data.prenom); 
+                    localStorage.setItem('userId', data.id);
+
+                    document.getElementById('welcomeMessage').innerText = `Bonjour, ${data.prenom}`;
+                    document.getElementById('loginModal').style.display = 'flex';
+                } else {
+                    errorDiv.innerText = data.message || "Identifiants incorrects";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.innerText = "Le serveur est inaccessible. Vérifiez votre connexion.";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function allerEspace() {
+            const role = localStorage.getItem('userRole');
+            
+            // Redirection selon le rôle nettoyé
+            if (role === 'admin') {
+                window.location.href = 'index.html'; 
+            } else if (role === 'author') {
+                window.location.href = 'rediger.html'; 
+            } else {
+                window.location.href = 'blog.html';
+            }
+        }
+
+        // Permet de valider en appuyant sur "Entrée"
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                connecter();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi de mes articles</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; }
+        .card { padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #ccc; background: #f9f9f9; }
+        .publie { border-left-color: #28a745; background: #e9f7ef; }
+        .rejete { border-left-color: #dc3545; background: #fdf2f2; }
+        .en_attente { border-left-color: #ffc107; background: #fffdf5; }
+        .message-admin { font-style: italic; color: #555; margin-top: 10px; padding: 5px; border-top: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>📋 Suivi de mes publications</h1>
+    <input type="text" id="nomAuteur" placeholder="Entrez votre nom d'auteur">
+    <button onclick="voirMesArticles()">Vérifier</button>
+
+    <div id="resultats"></div>
+
+    <script>
+        async function voirMesArticles() {
+            const nom = document.getElementById('nomAuteur').value;
+            const res = await fetch('http://localhost:3000/api/article');
+            const articles = await res.json();
+            
+            const conteneur = document.getElementById('resultats');
+            conteneur.innerHTML = "";
+
+            // On filtre pour ne voir que les articles de cet auteur
+            const mesArticles = articles.filter(a => a.auteur.toLowerCase() === nom.toLowerCase());
+
+            mesArticles.forEach(art => {
+                conteneur.innerHTML += `
+                    <div class="card ${art.statut}">
+                        <strong>${art.titre}</strong> - Statut : <span>${art.statut.replace('_', ' ')}</span>
+                        ${art.commentaire ? `<div class="message-admin">💬 Note de l'admin : ${art.commentaire}</div>` : ''}
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

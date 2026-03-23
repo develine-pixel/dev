@@ -1,0 +1,234 @@
+  <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorer les Publications | MyBlog</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --bg: #f8fafc;
+            --text-dark: #0f172a;
+            --text-gray: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-dark); 
+            margin: 0;
+        }
+
+        /* Barre de navigation */
+        nav {
+            background: var(--white);
+            padding: 1rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.25rem; color: var(--primary); text-decoration: none; }
+
+        /* Header & Section Recherche */
+        .hero-search {
+            background: var(--white);
+            padding: 60px 10%;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .hero-search h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 30px; }
+
+        .search-box {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg);
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+        }
+
+        .search-box input, .search-box select {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        /* Grille d'articles */
+        .main-container { padding: 50px 10%; max-width: 1200px; margin: 0 auto; }
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* Style des Cartes */
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            height: 160px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .card-body { padding: 24px; flex-grow: 1; }
+        .category-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .card-body h3 { margin: 0 0 10px 0; font-size: 1.25rem; line-height: 1.4; }
+        .author-info { font-size: 0.85rem; color: var(--text-gray); margin-bottom: 20px; }
+        .author-info b { color: var(--text-dark); }
+
+        .btn-open {
+            display: block;
+            text-align: center;
+            background: var(--text-dark);
+            color: var(--white);
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-open:hover { background: var(--primary); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="home.html" class="logo">MyBlog.</a>
+        <a href="login.html" style="text-decoration: none; font-weight: 600; color: var(--text-dark);">Connexion</a>
+    </nav>
+
+    <header class="hero-search">
+        <h1>Découvrez le savoir.</h1>
+        <div class="search-box">
+            <input type="text" id="mainSearch" placeholder="Chercher un titre ou un auteur..." onkeyup="filtrer()">
+            
+            <select id="catSearch" onchange="filtrer()">
+                <option value="">Toutes catégories</option>
+                <option value="Technologie">Technologie</option>
+                <option value="Santé">Santé</option>
+                <option value="Education">Éducation</option>
+            </select>
+
+            <input type="text" id="tagSearch" placeholder="Filtrer par tag..." onkeyup="filtrer()">
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div id="articlesList" class="articles-grid">
+            </div>
+    </main>
+
+    <script>
+        let tousLesArticles = [];
+
+        async function chargerArticles() {
+            try {
+                // IMPORTANT: Utilise bien la route qu'on a créée dans article.js
+                const response = await fetch('http://localhost:3000/api/article/public/all');
+                tousLesArticles = await response.json();
+                afficher(tousLesArticles);
+            } catch (error) {
+                console.error("Erreur:", error);
+                document.getElementById('articlesList').innerHTML = "<p>Serveur hors ligne...</p>";
+            }
+        }
+
+        function afficher(liste) {
+            const container = document.getElementById('articlesList');
+            container.innerHTML = "";
+
+            if (liste.length === 0) {
+                container.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: gray;'>Aucun article trouvé.</p>";
+                return;
+            }
+
+            liste.forEach(art => {
+                // Icône dynamique selon la catégorie
+                const icons = { 'Technologie': '💻', 'Santé': '🚑', 'Education': '📖' };
+                const emoji = icons[art.categorie] || '📄';
+
+                container.innerHTML += `
+                    <div class="card">
+                        <div class="card-header">${emoji}</div>
+                        <div class="card-body">
+                            <span class="category-badge">${art.categorie}</span>
+                            <h3>${art.titre}</h3>
+                            <div class="author-info">✍️ Par <b>${art.auteur}</b> • le ${new Date(art.created_at).toLocaleDateString()}</div>
+                            <div class="author-info">🏷️ <i>${art.tags || 'Pas de tags'}</i></div>
+                            <a href="http://localhost:3000/uploads/${art.contenu}" target="_blank" class="btn-open">Lire l'article</a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // LA LOGIQUE DE FILTRAGE AMÉLIORÉE
+        function filtrer() {
+            const texte = document.getElementById('mainSearch').value.toLowerCase();
+            const categorie = document.getElementById('catSearch').value;
+            const tag = document.getElementById('tagSearch').value.toLowerCase();
+
+            const resultat = tousLesArticles.filter(art => {
+                // Vérifie si le texte est dans le titre OU dans le nom de l'auteur
+                const matchTexte = art.titre.toLowerCase().includes(texte) || 
+                                   art.auteur.toLowerCase().includes(texte);
+                
+                const matchCat = categorie === "" || art.categorie === categorie;
+                
+                const matchTag = tag === "" || (art.tags && art.tags.toLowerCase().includes(tag));
+
+                return matchTexte && matchCat && matchTag;
+            });
+
+            afficher(resultat);
+        }
+
+        window.onload = chargerArticles;
+    </script>
+</body>
+</html>
