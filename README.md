@@ -15,20 +15,7 @@ Outils Techniques
 
     Frontend : HTML5 / CSS3 Moderne / JavaScript Asynchrone (Fetch).
  Arborescence du Projet
- 
- Architecture de la Base de Données
-
-Voici les tables implémentées pour permettre une extension future du blog (système de tags, commentaires et notifications) :
-Table	Rôle
-users	Utilisateurs (Admin, Auteurs, Membres).
-articles	Contenu principal, statut de publication et liens auteurs.
-author_requests	Stockage des candidatures pour le rôle de rédacteur.
-categories	Classification des articles.
-tags	Mots-clés pour le référencement.
-article_tags	Table de liaison (Many-to-Many) entre articles et tags.
-comments	Interactions des lecteurs sur les articles.
-notifications	Alertes système (ex: "Votre article a été publié").
- Présentation des API (Endpoints principaux)PROJET-BLOG/
+ PROJET-BLOG/
 ├── backend/                # ----- LOGIQUE SERVEUR -----
 │   ├── app.js              # Point d'entrée de l'API Express
 │   ├── package.json        # Dépendances (express, mysql2, multer, cors)
@@ -51,6 +38,21 @@ notifications	Alertes système (ex: "Votre article a été publié").
 │       └── suivi.html      # (Optionnel) Suivi des statuts d'articles
 │
 └── README.md               # Documentation technique du TP
+ 
+ Architecture de la Base de Données
+
+Voici les tables implémentées pour permettre une extension future du blog (système de tags, commentaires et notifications) :
+Table	Rôle
+users	Utilisateurs (Admin, Auteurs, Membres).
+articles	Contenu principal, statut de publication et liens auteurs.
+author_requests	Stockage des candidatures pour le rôle de rédacteur.
+categories	Classification des articles.
+tags	Mots-clés pour le référencement.
+article_tags	Table de liaison (Many-to-Many) entre articles et tags.
+comments	Interactions des lecteurs sur les articles.
+notifications	Alertes système (ex: "Votre article a été publié").
+ Présentation des API (Endpoints principaux)PROJET-BLOG/
+ 
 
     POST /api/login : Authentification utilisateur.
 
