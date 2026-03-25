@@ -15,20 +15,7 @@ Outils Techniques
 
     Frontend : HTML5 / CSS3 Moderne / JavaScript Asynchrone (Fetch).
  Arborescence du Projet
-Plaintext
-
-/
-├── uploads/                # Fichiers médias (PDF, Images)
-├── public/                 # Interface Web
-│   ├── login.html          # Authentification
-│   ├── inscription.html    # Inscription & Candidatures
-│   ├── index.html          # Panel Admin (Gestion & Approbation)
-│   ├── rediger.html        # Interface de création Auteur
-│   └── blog.html           # Flux public des articles
-├── app.js                  # Logique serveur et Endpoints
-├── package.json            # Dépendances Node.js
-└── schema_complet.sql      # Script de structure SQL
-
+ 
  Architecture de la Base de Données
 
 Voici les tables implémentées pour permettre une extension future du blog (système de tags, commentaires et notifications) :
@@ -41,7 +28,29 @@ tags	Mots-clés pour le référencement.
 article_tags	Table de liaison (Many-to-Many) entre articles et tags.
 comments	Interactions des lecteurs sur les articles.
 notifications	Alertes système (ex: "Votre article a été publié").
- Présentation des API (Endpoints principaux)
+ Présentation des API (Endpoints principaux)PROJET-BLOG/
+├── backend/                # ----- LOGIQUE SERVEUR -----
+│   ├── app.js              # Point d'entrée de l'API Express
+│   ├── package.json        # Dépendances (express, mysql2, multer, cors)
+│   ├── package-lock.json
+│   ├── routes/             # Division modulaire des Endpoints
+│   │   ├── article.js      # Gestion des articles (CRUD, validation, upload)
+│   │   └── auth.js         # Authentification (Login, Register, Rôles)
+│   └── uploads/            # Fichiers médias stockés (PDF, DOCX, PPTX)
+│       └── [fichiers-horodatés].pdf
+│
+├── frontend/               # ----- INTERFACE UTILISATEUR -----
+│   └── public/             # Pages HTML accessibles par le navigateur
+│       ├── index.html      # Dashboard Administrateur (Privé)
+│       ├── home.html       # Page d'accueil du site
+│       ├── blog.html       # Flux des articles publiés
+│       ├── login.html      # Connexion utilisateur
+│       ├── inscription.html # Inscription Membre/Auteur
+│       ├── inscription-admin.html # Inscription spécifique Admin
+│       ├── rediger.html    # Interface de rédaction (Auteurs)
+│       └── suivi.html      # (Optionnel) Suivi des statuts d'articles
+│
+└── README.md               # Documentation technique du TP
 
     POST /api/login : Authentification utilisateur.
 
