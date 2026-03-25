@@ -15,30 +15,32 @@ Outils Techniques
 
     Frontend : HTML5 / CSS3 Moderne / JavaScript Asynchrone (Fetch).
  Arborescence du Projet
- PROJET-BLOG/
-├── backend/                # ----- LOGIQUE SERVEUR -----
-│   ├── app.js              # Point d'entrée de l'API Express
+     PROJET-BLOG/
+├── backend/                # ----- PARTIE SERVEUR (Node.js) -----
+│   ├── app.js              # Point d'entrée principal de l'API
 │   ├── package.json        # Dépendances (express, mysql2, multer, cors)
 │   ├── package-lock.json
-│   ├── routes/             # Division modulaire des Endpoints
-│   │   ├── article.js      # Gestion des articles (CRUD, validation, upload)
+│   ├── routes/             # Logique des Endpoints par module
+│   │   ├── article.js      # Gestion des articles (CRUD et validation)
 │   │   └── auth.js         # Authentification (Login, Register, Rôles)
-│   └── uploads/            # Fichiers médias stockés (PDF, DOCX, PPTX)
-│       └── [fichiers-horodatés].pdf
+│   └── uploads/            # Documents envoyés par les auteurs
+│       ├── 1774123630258-TP2_INF221_2025-2026.pdf
+│       ├── 1774135223184-rapport 1 virtualisation.pdf
+│       ├── 1774136637486-cahier de charge m zogo.pdf
+│       └── 1774363856309-The_Invisible_Cost_of_Intellectual_Rigor_TDS.pptx
 │
-├── frontend/               # ----- INTERFACE UTILISATEUR -----
-│   └── public/             # Pages HTML accessibles par le navigateur
-│       ├── index.html      # Dashboard Administrateur (Privé)
-│       ├── home.html       # Page d'accueil du site
-│       ├── blog.html       # Flux des articles publiés
-│       ├── login.html      # Connexion utilisateur
-│       ├── inscription.html # Inscription Membre/Auteur
+├── frontend/               # ----- PARTIE CLIENT (Interface) -----
+│   └── public/             # Pages HTML statiques
+│       ├── home.html       # Accueil principal
+│       ├── blog.html       # Flux des articles publics
+│       ├── login.html      # Formulaire de connexion
+│       ├── inscription.html # Inscription Membres et Auteurs
 │       ├── inscription-admin.html # Inscription spécifique Admin
-│       ├── rediger.html    # Interface de rédaction (Auteurs)
-│       └── suivi.html      # (Optionnel) Suivi des statuts d'articles
+│       ├── index.html      # Dashboard Admin (Validation articles/auteurs)
+│       ├── rediger.html    # Espace de rédaction (Auteurs uniquement)
+│       └── suivi.html      # Page de suivi des statuts d'articles
 │
-└── README.md               # Documentation technique du TP
- 
+└── README.md               # Documentation technique du projet
  Architecture de la Base de Données
 
 Voici les tables implémentées pour permettre une extension future du blog (système de tags, commentaires et notifications) :
